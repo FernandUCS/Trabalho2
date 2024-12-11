@@ -51,9 +51,9 @@ jobs:
       - name: Run Supabase migrations
         run: |
           # Rodando migrações no banco de dados do Supabase
-          psql -h ${{ secrets.SUPABASE_URL }} -U postgres -d postgres -f migrations/migrate.sql
+          psql -h ${{ secrets.SUPABASE_URL_DEVELOP }} -U postgres -d postgres -f migrations/migrate.sql
         env:
-          PGPASSWORD: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PGPASSWORD: ${{ secrets.SUPABASE_KEY_DEVELOP }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
