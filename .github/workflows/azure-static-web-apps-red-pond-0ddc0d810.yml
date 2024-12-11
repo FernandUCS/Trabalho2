@@ -33,6 +33,28 @@ jobs:
           output_location: "." # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
 
+  update_supabase_db:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Update Supabase Database
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Set up PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install postgresql-client
+
+      - name: Run Supabase migrations
+        run: |
+          # Rodando migrações no banco de dados do Supabase
+          psql -h ${{ secrets.SUPABASE_URL }} -U postgres -d postgres -f migrations/migrate.sql
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
